@@ -46,7 +46,6 @@ public class Deck {
         }
         for (int i = 1; i <= playDeck.size(); i++) {
             Card c = (Card) playDeck.dequeue();
-            System.out.println(c.getCardAndSuit() + " " + i);
             playDeck.enqueue(c);
         }
     }
@@ -66,7 +65,6 @@ public class Deck {
         for (int i = 0; i < runs; i++) {
             int randomIndex = rand.nextInt(holdingList.getSize());
             Card c = (Card) holdingList.remove(randomIndex + 1);
-            System.out.println(randomIndex);
             if (c.equals(null)) {
                 throw new RuntimeException("Null");
             } else {
