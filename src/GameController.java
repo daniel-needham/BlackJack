@@ -146,13 +146,13 @@ public class GameController {
             dealer.describeHand();
             TimeUnit.SECONDS.sleep(2);
             if (bust(dealer) && dealer.getNumberOfAces() == 0) {
-                System.out.println("The Dealer has bust with a hand of " + player.getValueOfHand() + ".");
+                System.out.println("The Dealer has bust with a hand of " + dealer.getValueOfHand() + ".");
                 break;
             }
             if (bust(dealer) && dealer.getNumberOfAces() > 0) {
                 int oldHandValue = dealer.getValueOfHand();
                 dealer.aceAsOne();
-                System.out.println("The Dealer had a soft hand of " + oldHandValue + ". Their ace will now count as 1, making the hand a value of " + player.getValueOfHand() + ".");
+                System.out.println("The Dealer had a soft hand of " + oldHandValue + ". Their ace will now count as 1, making the hand a value of " + dealer.getValueOfHand() + ".");
             }
         }
         TimeUnit.SECONDS.sleep(2);
@@ -173,6 +173,7 @@ public class GameController {
 
         if (!bust(player) && bust(dealer)) {
             System.out.println("You win the round with a hand of " + player.getValueOfHand() + ". The Dealer has bust.");
+            playerBetReturn(player, bet, 1);
             clearPlayerandDealerDeck();
             return;
         }
@@ -181,14 +182,17 @@ public class GameController {
             if (player.getValueOfHand() == 21 && player.getCurrentHand().size() == 2) {
                 if (dealer.getCurrentHand().size() == 2) {
                     System.out.println("You and the Dealer both have Blackjack, this round is a push.");
+                    playerBetReturn(player, bet, 0);
                     clearPlayerandDealerDeck();
                     return;
                 }
                 System.out.println("You beat the dealer with Blackjack.");
                 clearPlayerandDealerDeck();
+                playerBetReturn(player, bet, 1.5F);
                 return;
             }
             System.out.println("You and the Dealer are tied at " + dealer.getValueOfHand() + ", this round is a push.");
+            playerBetReturn(player, bet, 0);
             clearPlayerandDealerDeck();
             return;
 
@@ -202,6 +206,12 @@ public class GameController {
 
         if (player.getValueOfHand() > dealer.getValueOfHand()) {
             System.out.println("Your hand beats the dealer, you win this round with " + player.getValueOfHand() + ".");
+            if (player.getValueOfHand() == 21 && player.getCurrentHand().size() == 2) {
+                playerBetReturn(player, bet, 1.5F);
+            } else {
+                playerBetReturn(player, bet, 1);
+            }
+
             clearPlayerandDealerDeck();
             return;
         }
@@ -217,6 +227,11 @@ public class GameController {
         for (int i = 0; i < amount; i++) {
             p.addCardToHand(playDeck.getCard());
         }
+    }
+
+    public static void playerBetReturn(Player p, int bet, float multiplier) {
+        p.changeChips(Math.round(bet * multiplier));
+        p.changeChips(bet);
     }
 
     public static void clearPlayerandDealerDeck() {
